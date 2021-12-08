@@ -1,0 +1,2 @@
+# Feature extraction
+![Feature types](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F0329981e-d358-4778-a8c2-a3272260699c%2FScreenshot_from_2021-11-30_14-13-59.png?table=block&id=570c4c2a-00ec-42c2-babc-86351a3291cd&spaceId=e0cb3551-7dbe-4f03-a44f-f7d9328ecd4f&width=1900&userId=80c81d2c-5396-4c72-be40-5220dd79ce33&cache=v2)
