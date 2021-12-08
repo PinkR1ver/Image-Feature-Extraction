@@ -7,5 +7,7 @@ if __name__ == '__main__':
     x = x + y
     x = x/3
     print(x)
-    
-    print(x.all()==None)
+
+    print(x.all() == None)
+
+    print(not np.array([]).all())
