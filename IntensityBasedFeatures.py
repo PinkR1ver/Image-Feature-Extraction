@@ -22,12 +22,29 @@ def mean_of_image(image, masks=np.array([])):
         sum /= iter
         return tuple(sum)
 
-def variance_of_image(image, masks=np.array([]), mean=None):
+def variance_of_image(image, masks=np.array([])):
     im = np.array(image)
     (w, h, d) = im.shape
     if masks.all():
         im.shape = (w*h, d)
         return tuple(np.var(im, axis=0))
+    else:
+        sum=[0 ,0 ,0]
+        iter = 0
+        for i in range(w):
+            for j in range(h):
+                if masks[i, j] == 1:
+                    sum += im[i, j]
+                    iter +=1
+        sum = sum.astype('float32')
+        mean = sum / iter
+        sum = [0 ,0 ,0]
+        for i in range(w):
+            for j in range(h):
+                if masks[i, j] == 1:
+                    sum += (im[i,j] - mean) * (im[i,j] - mean)
+        sum /= iter
+        return tuple(sum)
 
 
 if __name__=='__main__':
@@ -41,7 +58,7 @@ if __name__=='__main__':
             else:
                 grayscale[i,j] = 0
     mean = mean_of_image(rocket, grayscale)
-    var = variance_of_image(rocket)
+    var = variance_of_image(rocket, grayscale)
     print(mean)
     print(var)
     io.imshow(rocket)
