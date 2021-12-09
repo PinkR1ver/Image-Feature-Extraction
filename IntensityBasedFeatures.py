@@ -15,7 +15,7 @@ def mean_of_image(image, masks=np.array([])):
         iter = 0
         for i in range(w):
             for j in range(h):
-                if masks[i, j] == 1 or 255:
+                if masks[i, j] == 1 or masks[i, j] ==255:
                     sum +=im[i,j]
                     iter +=1
         sum = sum.astype('float32')
@@ -36,7 +36,7 @@ def variance_of_image(image, masks=np.array([])):
         iter = 0
         for i in range(w):
             for j in range(h):
-                if masks[i, j] == 1 or 255:
+                if masks[i, j] == 1 or masks[i, j] ==255:
                     sum += im[i, j]
                     iter +=1
         sum = sum.astype('float32')
