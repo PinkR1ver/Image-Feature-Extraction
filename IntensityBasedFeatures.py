@@ -3,6 +3,7 @@ import numpy as np
 import skimage
 from skimage import data, io, color
 from matplotlib import pyplot as plt
+from scipy.stats import skew
 
 def mean_of_image(image, masks=np.array([])):
     im = np.array(image)
@@ -11,19 +12,16 @@ def mean_of_image(image, masks=np.array([])):
         im.shape = (w*h, d)
         return tuple(np.average(im, axis=0))
     else:
-        sum = np.array([0 ,0 ,0])
+        sum = [0, 0, 0]
         iter = 0
         for i in range(w):
             for j in range(h):
                 if masks[i, j] == 1 or masks[i, j] ==255:
                     sum +=im[i,j]
                     iter +=1
-        sum = sum.astype('float32')
-        if sum.all() != 0:
-            sum /= iter
-            return tuple(sum)
-        else:
-            return tuple([0, 0, 0])
+        #sum = sum.astype('float32')
+        mean = sum / iter
+        return tuple(mean)
 
 def variance_of_image(image, masks=np.array([])):
     im = np.array(image)
@@ -32,16 +30,16 @@ def variance_of_image(image, masks=np.array([])):
         im.shape = (w*h, d)
         return tuple(np.var(im, axis=0))
     else:
-        sum = np.array([0 ,0 ,0])
+        sum = [0, 0, 0]
         iter = 0
         for i in range(w):
             for j in range(h):
                 if masks[i, j] == 1 or masks[i, j] ==255:
                     sum += im[i, j]
                     iter +=1
-        sum = sum.astype('float32')
+        #sum = sum.astype('float32')
         mean = sum / iter
-        sum = [0 ,0 ,0]
+        sum = [0, 0, 0]
         for i in range(w):
             for j in range(h):
                 if masks[i, j] == 1:
@@ -50,7 +48,35 @@ def variance_of_image(image, masks=np.array([])):
         return tuple(sum)
 
 def skewness_of_image(image, masks=np.array([])):
-    pass
+    im = np.array(image)
+    (w, h, d) = im.shape
+    if masks.all():
+        im.shape = (w*h, d)
+        return tuple(skew(im, axis=0))
+    else:
+        sum = [0, 0, 0]
+        iter = 0
+        for i in range(w):
+            for j in range(h):
+                if masks[i, j] == 1 or masks[i, j] ==255:
+                    sum += im[i, j]
+                    iter +=1
+        #sum = sum.astype('float32')
+        mean = sum / iter
+        sum = [0, 0, 0]
+        for i in range(w):
+            for j in range(h):
+                if masks[i, j] == 1:
+                    sum += (im[i,j] - mean) * (im[i,j] - mean)
+        standardDeviation = np.sqrt(sum / iter)
+        sum = [0, 0, 0]
+        for i in range(w):
+            for j in range(h):
+                if masks[i, j] == 1:
+                    sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
+        skewness = standardDeviation ** -3 * (sum / iter)
+        return tuple(skewness)
+
 
 
 if __name__=='__main__':
@@ -66,8 +92,10 @@ if __name__=='__main__':
                 grayscale[i,j] = 0
     mean = mean_of_image(rocket, grayscale)
     var = variance_of_image(rocket, grayscale)
+    skewness = skewness_of_image(rocket, grayscale)
     print(mean)
     print(var)
+    print(skewness)
     io.imshow(rocket)
     plt.show()
     io.imshow(grayscale)
