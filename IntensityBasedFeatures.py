@@ -42,7 +42,7 @@ def variance_of_image(image, masks=np.array([])):
         sum = [0, 0, 0]
         for i in range(w):
             for j in range(h):
-                if masks[i, j] == 1:
+                if masks[i, j] == 1 or masks[i, j] ==255:
                     sum += (im[i,j] - mean) * (im[i,j] - mean)
         sum /= iter
         return tuple(sum)
@@ -66,13 +66,13 @@ def skewness_of_image(image, masks=np.array([])):
         sum = [0, 0, 0]
         for i in range(w):
             for j in range(h):
-                if masks[i, j] == 1:
+                if masks[i, j] == 1 or masks[i, j] ==255:
                     sum += (im[i,j] - mean) * (im[i,j] - mean)
         standardDeviation = np.sqrt(sum / iter)
         sum = [0, 0, 0]
         for i in range(w):
             for j in range(h):
-                if masks[i, j] == 1:
+                if masks[i, j] == 1 or masks[i, j] ==255:
                     sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
         skewness = standardDeviation ** -3 * (sum / iter)
         return tuple(skewness)
@@ -119,4 +119,8 @@ if __name__=='__main__':
     plt.show()
     #print(np.nonzero(Brain_mask))
     Brain_mean = mean_of_image(Brain, Brain_mask)
+    Brain_var = variance_of_image(Brain, Brain_mask)
+    Brain_skew = skewness_of_image(Brain, Brain_mask)
     print(Brain_mean)
+    print(Brain_var)
+    print(Brain_skew)
