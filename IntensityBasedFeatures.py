@@ -3,7 +3,7 @@ import numpy as np
 import skimage
 from skimage import data, io, color
 from matplotlib import pyplot as plt
-from scipy.stats import skew
+from scipy.stats import skew, kurtosis
 
 def mean_of_image(image, masks=np.array([])):
     im = np.array(image)
@@ -77,6 +77,35 @@ def skewness_of_image(image, masks=np.array([])):
         skewness = standardDeviation ** -3 * (sum / iter)
         return tuple(skewness)
 
+def kurtosis_of_image(image, masks=np.array([])):
+    im = np.array(image)
+    (w, h, d) = im.shape
+    if masks.all():
+        im.shape = (w*h ,d)
+        return tuple(kurtosis(im, axis=0))   
+    else:
+        sum = [0, 0, 0]
+        iter = 0
+        for i in range(w):
+            for j in range(h):
+                if masks[i, j] == 1 or masks[i, j] ==255:
+                    sum += im[i, j]
+                    iter +=1
+        mean = sum / iter
+        sum = [0, 0, 0]
+        for i in range(w):
+            for j in range(h):
+                if masks[i, j] == 1 or masks[i, j] ==255:
+                    sum += (im[i,j] - mean) * (im[i,j] - mean)
+        standardDeviation = np.sqrt(sum / iter)
+        sum = [0, 0, 0]
+        for i in range(w):
+            for j in range(h):
+                if masks[i, j] == 1 or masks[i, j] ==255:
+                    sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
+        kurt = standardDeviation ** -4 * (sum / iter) - [3, 3, 3]
+        return tuple(kurt)
+
 
 
 if __name__=='__main__':
@@ -90,18 +119,28 @@ if __name__=='__main__':
                 grayscale[i,j] = 1
             else:
                 grayscale[i,j] = 0
+    white = np.ones(grayscale.shape)
     mean = mean_of_image(rocket, grayscale)
+    mean2 = mean_of_image(rocket)
+    mean3 = mean_of_image(rocket, white)
     var = variance_of_image(rocket, grayscale)
+    var2 = variance_of_image(rocket)
+    var3 = variance_of_image(rocket, white)
     skewness = skewness_of_image(rocket, grayscale)
-    print(mean)
-    print(var)
-    print(skewness)
+    skewness2 = skewness_of_image(rocket)
+    skewness3 =skewness_of_image(rocket, white)
+    kurt = kurtosis_of_image(rocket, grayscale)
+    kurt2 = kurtosis_of_image(rocket)
+    kurt3 = kurtosis_of_image(rocket, white)
+    print(mean, mean2, mean3)
+    print(var, var2, var3)
+    print(skewness, skewness2, skewness3)
+    print(kurt, kurt2, kurt3)
     io.imshow(rocket)
     plt.show()
     io.imshow(grayscale)
     plt.show()
     print(grayscale.shape)
-    white = np.ones(grayscale.shape)
     io.imshow(white)
     plt.show()
 
