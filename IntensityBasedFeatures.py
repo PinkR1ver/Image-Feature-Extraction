@@ -208,6 +208,8 @@ if __name__=='__main__':
     io.imshow(gray_Ivy2)
     plt.show()
     print(Ivy.shape)
+    print(gray_Ivy.shape)
+    print(gray_Ivy2.shape)
     print(f'mean:{mean_of_image(Ivy)}')
     print(f'variance:{variance_of_image(Ivy)}')
     print(f'standard deviation:{standardDeviation_of_image(Ivy)}')
