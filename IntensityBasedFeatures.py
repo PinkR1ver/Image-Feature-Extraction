@@ -47,6 +47,30 @@ def variance_of_image(image, masks=np.array([])):
         sum /= iter
         return tuple(sum)
 
+def standardDeviation_of_image(image, masks=np.array([])):
+    im = np.array(image)
+    (w, h, d) = im.shape
+    if masks.all():
+        im.shape = (w*h, d)
+        return tuple(skew(im, axis=0))
+    else:
+        sum = [0, 0, 0]
+        iter = 0
+        for i in range(w):
+            for j in range(h):
+                if masks[i, j] == 1 or masks[i, j] ==255:
+                    sum += im[i, j]
+                    iter +=1
+        #sum = sum.astype('float32')
+        mean = sum / iter
+        sum = [0, 0, 0]
+        for i in range(w):
+            for j in range(h):
+                if masks[i, j] == 1 or masks[i, j] ==255:
+                    sum += (im[i,j] - mean) * (im[i,j] - mean)
+        standardDeviation = np.sqrt(sum / iter)
+        return tuple(standardDeviation)
+
 def skewness_of_image(image, masks=np.array([])):
     im = np.array(image)
     (w, h, d) = im.shape
