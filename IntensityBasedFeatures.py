@@ -4,6 +4,7 @@ import skimage
 from skimage import data, io, color
 from matplotlib import pyplot as plt
 from scipy.stats import skew, kurtosis
+import cv2
 
 def mean_of_image(image, masks=np.array([])):
     im = np.array(image)
@@ -130,9 +131,13 @@ def kurtosis_of_image(image, masks=np.array([])):
         kurt = standardDeviation ** -4 * (sum / iter) - [3, 3, 3]
         return tuple(kurt)
 
+def energy_of_image(image, masks=np.array([])):
+    pass
+
 
 
 if __name__=='__main__':
+    '''
     rocket = data.rocket()
     grayscale = color.rgb2gray(rocket)
     io.imshow(grayscale)
@@ -187,3 +192,24 @@ if __name__=='__main__':
     print(Brain_mean)
     print(Brain_var)
     print(Brain_skew)
+    Brain = cv2.cvtColor(Brain, cv2.COLOR_RGB2GRAY)
+    io.imshow(Brain)
+    plt.show()
+    print(Brain.shape)
+    '''
+    Ivy = Image.open(r'sample/Ivy.jpeg')
+    Ivy = np.array(Ivy)
+    gray_Ivy = color.rgb2gray(Ivy)
+    gray_Ivy2 = cv2.cvtColor(Ivy, cv2.COLOR_RGB2GRAY)
+    io.imshow(Ivy)
+    plt.show()
+    io.imshow(gray_Ivy)
+    plt.show()
+    io.imshow(gray_Ivy2)
+    plt.show()
+    print(Ivy.shape)
+    print(f'mean:{mean_of_image(Ivy)}')
+    print(f'variance:{variance_of_image(Ivy)}')
+    print(f'standard deviation:{standardDeviation_of_image(Ivy)}')
+    print(f'skewness:{skewness_of_image(Ivy)}')
+    print(f'kurtosis:{kurtosis_of_image(Ivy)}')
