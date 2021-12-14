@@ -5,6 +5,7 @@ from skimage import data, io, color
 from matplotlib import pyplot as plt
 from scipy.stats import skew, kurtosis
 import cv2
+import math
 
 def mean_of_image(image, masks=np.array([])):
     im = np.array(image)
@@ -165,6 +166,22 @@ def energy_of_image(image, masks=np.array([])):
         for i in range(256):
             sum += probabilityDensity[i] * probabilityDensity[i]
         return sum
+
+def entropy_of_image(image, masks=np.array([])):
+    if masks.all():
+        probabilityDensity = probabilitydensity_of_image(image)
+        sum = 0
+        for i in range(256):
+            if probabilityDensity[i] !=0:
+                sum -= probabilityDensity[i] * math.log(probabilityDensity[i], 2)
+        return sum
+    else:
+        probabilityDensity = probabilitydensity_of_image(image, masks)
+        sum = 0
+        for i in range(256):
+            if probabilityDensity[i] !=0:
+                sum -= probabilityDensity[i] * math.log(probabilityDensity[i], 2)
+        return sum
         
 
 
@@ -250,3 +267,4 @@ if __name__=='__main__':
     print(f'kurtosis:{kurtosis_of_image(Ivy)}')
     print(f'Probaility Density:{probabilitydensity_of_image(Ivy)}')
     print(f'Energy:{energy_of_image(Ivy)}')
+    print(f'Entropy:{entropy_of_image(Ivy)}')
