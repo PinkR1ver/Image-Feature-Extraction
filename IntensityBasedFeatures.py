@@ -302,7 +302,7 @@ def kurtosis_of_image(image, masks=np.array([]), mode='RGB'):
             for i in range(w):
                 for j in range(h):
                     sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
-            kurt = standardDeviation ** -4 * (sum / iter) - [3, 3, 3]
+            kurt = standardDeviation ** -4 * (sum / iter) - 3
             return tuple(kurt)
         else:
             sum = [0]
