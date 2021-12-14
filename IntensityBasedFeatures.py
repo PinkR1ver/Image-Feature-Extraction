@@ -1,5 +1,8 @@
 from PIL import Image
 import numpy as np
+from numpy.ma.core import var
+from scipy.stats.mstats_basic import ModeResult
+from scipy.stats.stats import mode
 import skimage
 from skimage import data, io, color
 from matplotlib import pyplot as plt
@@ -7,134 +10,329 @@ from scipy.stats import skew, kurtosis
 import cv2
 import math
 
-def mean_of_image(image, masks=np.array([])):
-    im = np.array(image)
-    (w, h, d) = im.shape
-    if masks.all():
-        im.shape = (w*h, d)
-        return tuple(np.average(im, axis=0))
-    else:
-        sum = [0, 0, 0]
-        iter = 0
-        for i in range(w):
-            for j in range(h):
-                if masks[i, j] == 1 or masks[i, j] ==255:
+def mean_of_image(image, masks=np.array([]), mode='RGB'):
+    if mode == 'RGB':
+        im = np.array(image)
+        (w, h, d) = im.shape
+        if masks.all():
+            im.shape = (w*h, d)
+            return tuple(np.average(im, axis=0))
+        else:
+            sum = [0, 0, 0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum +=im[i,j]
+                        iter +=1
+            #sum = sum.astype('float32')
+            mean = sum / iter
+            return tuple(mean)
+    elif mode == 'GRAY':
+        im = np.array(image)
+        (w, h) = im.shape
+        if masks.all():
+            sum = [0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
                     sum +=im[i,j]
                     iter +=1
-        #sum = sum.astype('float32')
-        mean = sum / iter
-        return tuple(mean)
+            mean = sum / iter
+            return tuple(mean)
+        else:
+            sum = [0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum +=im[i,j]
+                        iter +=1
+            mean = sum / iter
+            return tuple(mean)
 
-def variance_of_image(image, masks=np.array([])):
-    im = np.array(image)
-    (w, h, d) = im.shape
-    if masks.all():
-        im.shape = (w*h, d)
-        return tuple(np.var(im, axis=0))
-    else:
-        sum = [0, 0, 0]
-        iter = 0
-        for i in range(w):
-            for j in range(h):
-                if masks[i, j] == 1 or masks[i, j] ==255:
+def variance_of_image(image, masks=np.array([]), mode='RGB'):
+    if mode == 'RGB':
+        im = np.array(image)
+        (w, h, d) = im.shape
+        if masks.all():
+            im.shape = (w*h, d)
+            return tuple(np.var(im, axis=0))
+        else:
+            sum = [0, 0, 0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += im[i, j]
+                        iter +=1
+            mean = sum / iter
+            sum = [0, 0, 0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean)
+            sum /= iter
+            return tuple(sum)
+    elif mode =='GRAY':
+        im = np.array(image)
+        (w, h) = im.shape
+        if masks.all():
+            sum = [0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
                     sum += im[i, j]
                     iter +=1
-        #sum = sum.astype('float32')
-        mean = sum / iter
-        sum = [0, 0, 0]
-        for i in range(w):
-            for j in range(h):
-                if masks[i, j] == 1 or masks[i, j] ==255:
+            mean = sum / iter
+            sum = [0]
+            for i in range(w):
+                for j in range(h):   
                     sum += (im[i,j] - mean) * (im[i,j] - mean)
-        sum /= iter
-        return tuple(sum)
+            sum /= iter
+            return tuple(sum)
 
-def standardDeviation_of_image(image, masks=np.array([])):
-    im = np.array(image)
-    (w, h, d) = im.shape
-    if masks.all():
-        im.shape = (w*h, d)
-        return tuple(skew(im, axis=0))
-    else:
-        sum = [0, 0, 0]
-        iter = 0
-        for i in range(w):
-            for j in range(h):
-                if masks[i, j] == 1 or masks[i, j] ==255:
+        else:
+            sum = [0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += im[i, j]
+                        iter +=1
+            mean = sum / iter
+            sum = [0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean)
+            sum /= iter
+            return tuple(sum)
+
+def standardDeviation_of_image(image, masks=np.array([]), mode='RGB'):
+    if mode == 'RGB':
+        im = np.array(image)
+        (w, h, d) = im.shape
+        if masks.all():
+            sum = [0, 0, 0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
                     sum += im[i, j]
                     iter +=1
-        #sum = sum.astype('float32')
-        mean = sum / iter
-        sum = [0, 0, 0]
-        for i in range(w):
-            for j in range(h):
-                if masks[i, j] == 1 or masks[i, j] ==255:
+            mean = sum / iter
+            sum = [0, 0, 0]
+            for i in range(w):
+                for j in range(h):
                     sum += (im[i,j] - mean) * (im[i,j] - mean)
-        standardDeviation = np.sqrt(sum / iter)
-        return tuple(standardDeviation)
-
-def skewness_of_image(image, masks=np.array([])):
-    im = np.array(image)
-    (w, h, d) = im.shape
-    if masks.all():
-        im.shape = (w*h, d)
-        return tuple(skew(im, axis=0))
-    else:
-        sum = [0, 0, 0]
-        iter = 0
-        for i in range(w):
-            for j in range(h):
-                if masks[i, j] == 1 or masks[i, j] ==255:
+            standardDeviation = np.sqrt(sum / iter)
+            return tuple(standardDeviation)
+        else:
+            sum = [0, 0, 0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += im[i, j]
+                        iter +=1
+            mean = sum / iter
+            sum = [0, 0, 0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean)
+            standardDeviation = np.sqrt(sum / iter)
+            return tuple(standardDeviation)
+    elif mode =='GRAY':
+        im = np.array(image)
+        (w, h) = im.shape
+        if masks.all():
+            sum = [0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
                     sum += im[i, j]
                     iter +=1
-        #sum = sum.astype('float32')
-        mean = sum / iter
-        sum = [0, 0, 0]
-        for i in range(w):
-            for j in range(h):
-                if masks[i, j] == 1 or masks[i, j] ==255:
+            mean = sum / iter
+            sum = [0]
+            for i in range(w):
+                for j in range(h):
                     sum += (im[i,j] - mean) * (im[i,j] - mean)
-        standardDeviation = np.sqrt(sum / iter)
-        sum = [0, 0, 0]
-        for i in range(w):
-            for j in range(h):
-                if masks[i, j] == 1 or masks[i, j] ==255:
+            standardDeviation = np.sqrt(sum / iter)
+            return tuple(standardDeviation)
+        else:
+            sum = [0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += im[i, j]
+                        iter +=1
+            mean = sum / iter
+            sum = [0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean)
+            standardDeviation = np.sqrt(sum / iter)
+            return tuple(standardDeviation)
+        
+def skewness_of_image(image, masks=np.array([]), mode='RGB'):
+    if mode == 'RGB':
+        im = np.array(image)
+        (w, h, d) = im.shape
+        if masks.all():
+            im.shape = (w*h, d)
+            return tuple(skew(im, axis=0))
+        else:
+            sum = [0, 0, 0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += im[i, j]
+                        iter +=1
+            #sum = sum.astype('float32')
+            mean = sum / iter
+            sum = [0, 0, 0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean)
+            standardDeviation = np.sqrt(sum / iter)
+            sum = [0, 0, 0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
+            skewness = standardDeviation ** -3 * (sum / iter)
+            return tuple(skewness)
+    elif mode == 'GRAY':
+        im = np.array(image)
+        (w, h) = im.shape
+        if masks.all():
+            sum = [0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
+                    sum += im[i, j]
+                    iter +=1
+            mean = sum / iter
+            sum = [0]
+            for i in range(w):
+                for j in range(h):
+                    sum += (im[i,j] - mean) * (im[i,j] - mean)
+            standardDeviation = np.sqrt(sum / iter)
+            sum = [0]
+            for i in range(w):
+                for j in range(h):
                     sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
-        skewness = standardDeviation ** -3 * (sum / iter)
-        return tuple(skewness)
+            skewness = standardDeviation ** -3 * (sum / iter)
+            return tuple(skewness)
+        else:
+            sum = [0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += im[i, j]
+                        iter +=1
+            mean = sum / iter
+            sum = [0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean)
+            standardDeviation = np.sqrt(sum / iter)
+            sum = [0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
+            skewness = standardDeviation ** -3 * (sum / iter)
+            return tuple(skewness)
+            
 
-def kurtosis_of_image(image, masks=np.array([])):
-    im = np.array(image)
-    (w, h, d) = im.shape
-    if masks.all():
-        im.shape = (w*h ,d)
-        return tuple(kurtosis(im, axis=0))   
-    else:
-        sum = [0, 0, 0]
-        iter = 0
-        for i in range(w):
-            for j in range(h):
-                if masks[i, j] == 1 or masks[i, j] ==255:
+def kurtosis_of_image(image, masks=np.array([]), mode='RGB'):
+    if mode == 'RGB':   
+        im = np.array(image)
+        (w, h, d) = im.shape
+        if masks.all():
+            im.shape = (w*h ,d)
+            return tuple(kurtosis(im, axis=0))   
+        else:
+            sum = [0, 0, 0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += im[i, j]
+                        iter +=1
+            mean = sum / iter
+            sum = [0, 0, 0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean)
+            standardDeviation = np.sqrt(sum / iter)
+            sum = [0, 0, 0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
+            kurt = standardDeviation ** -4 * (sum / iter) - [3, 3, 3]
+            return tuple(kurt)
+    elif mode == 'GRAY':
+        im = np.array(image)
+        (w, h) = im.shape
+        if masks.all():
+            sum = [0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
                     sum += im[i, j]
                     iter +=1
-        mean = sum / iter
-        sum = [0, 0, 0]
-        for i in range(w):
-            for j in range(h):
-                if masks[i, j] == 1 or masks[i, j] ==255:
+            mean = sum / iter
+            sum = [0]
+            for i in range(w):
+                for j in range(h):
                     sum += (im[i,j] - mean) * (im[i,j] - mean)
-        standardDeviation = np.sqrt(sum / iter)
-        sum = [0, 0, 0]
-        for i in range(w):
-            for j in range(h):
-                if masks[i, j] == 1 or masks[i, j] ==255:
+            standardDeviation = np.sqrt(sum / iter)
+            sum = [0]
+            for i in range(w):
+                for j in range(h):
                     sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
-        kurt = standardDeviation ** -4 * (sum / iter) - [3, 3, 3]
-        return tuple(kurt)
+            kurt = standardDeviation ** -4 * (sum / iter) - [3, 3, 3]
+            return tuple(kurt)
+        else:
+            sum = [0]
+            iter = 0
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += im[i, j]
+                        iter +=1
+            mean = sum / iter
+            sum = [0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean)
+            standardDeviation = np.sqrt(sum / iter)
+            sum = [0]
+            for i in range(w):
+                for j in range(h):
+                    if masks[i, j] == 1 or masks[i, j] ==255:
+                        sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
+            kurt = standardDeviation ** -4 * (sum / iter) - [3, 3, 3]
+            return tuple(kurt)
 
-def probabilitydensity_of_image(image, masks=np.array([])):
+def probabilitydensity_of_image(image, masks=np.array([]), mode='GRAY'):
     im = np.array(image)
-    gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
+    if mode == 'RGB':
+        gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
+    else:
+        gray = im
     if masks.all():
         h = np.zeros(256)
         for i in range(gray.shape[0]):
@@ -153,30 +351,30 @@ def probabilitydensity_of_image(image, masks=np.array([])):
         probabilityDensity = h / iter
         return tuple(probabilityDensity)
 
-def energy_of_image(image, masks=np.array([])):
+def energy_of_image(image, masks=np.array([]), mode='GRAY'):
     if masks.all():
-        probabilityDensity = probabilitydensity_of_image(image)
+        probabilityDensity = probabilitydensity_of_image(image, mode=mode)
         sum = 0
         for i in range(256):
             sum += probabilityDensity[i] * probabilityDensity[i]
         return sum
     else:
-        probabilityDensity = probabilitydensity_of_image(image, masks)
+        probabilityDensity = probabilitydensity_of_image(image, masks, mode)
         sum = 0
         for i in range(256):
             sum += probabilityDensity[i] * probabilityDensity[i]
         return sum
 
-def entropy_of_image(image, masks=np.array([])):
+def entropy_of_image(image, masks=np.array([]), mode='GRAY'):
     if masks.all():
-        probabilityDensity = probabilitydensity_of_image(image)
+        probabilityDensity = probabilitydensity_of_image(image, mode=mode)
         sum = 0
         for i in range(256):
             if probabilityDensity[i] !=0:
                 sum -= probabilityDensity[i] * math.log(probabilityDensity[i], 2)
         return sum
     else:
-        probabilityDensity = probabilitydensity_of_image(image, masks)
+        probabilityDensity = probabilitydensity_of_image(image, masks, mode)
         sum = 0
         for i in range(256):
             if probabilityDensity[i] !=0:
@@ -247,6 +445,7 @@ if __name__=='__main__':
     plt.show()
     print(Brain.shape)
     '''
+
     Ivy = Image.open(r'sample/Ivy.jpeg')
     Ivy = np.array(Ivy)
     gray_Ivy = color.rgb2gray(Ivy)
@@ -268,3 +467,17 @@ if __name__=='__main__':
     print(f'Probaility Density:{probabilitydensity_of_image(Ivy)}')
     print(f'Energy:{energy_of_image(Ivy)}')
     print(f'Entropy:{entropy_of_image(Ivy)}')
+    #----------------------------------------------
+    gray_mean = mean_of_image(gray_Ivy2, mode='GRAY')
+    gray_variance = variance_of_image(gray_Ivy2, mode='GRAY')
+    gray_SD = standardDeviation_of_image(gray_Ivy2, mode='GRAY')
+    gray_skewness = skewness_of_image(gray_Ivy2, mode='GRAY')
+    gray_kurtosis = kurtosis_of_image(gray_Ivy2, mode='GRAY')
+    print(f'mean:{gray_mean}')
+    print(f'variance:{gray_variance}')
+    print(f'standard deviation:{gray_SD}')
+    print(f'skewness:{gray_skewness}')
+    print(f'kurtosis:{gray_kurtosis}')
+    print(f'Probaility Density:{probabilitydensity_of_image(gray_Ivy2)}')
+    print(f'Energy:{energy_of_image(gray_Ivy2)}')
+    print(f'Entropy:{entropy_of_image(gray_Ivy2)}')
