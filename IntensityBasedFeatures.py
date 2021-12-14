@@ -131,6 +131,27 @@ def kurtosis_of_image(image, masks=np.array([])):
         kurt = standardDeviation ** -4 * (sum / iter) - [3, 3, 3]
         return tuple(kurt)
 
+def probabilitydensity_of_image(image, masks=np.array([])):
+    im = np.array(image)
+    gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
+    if masks.all():
+        h = np.zeros(256)
+        for i in range(gray.shape[0]):
+            for j in range(gray.shape[1]):
+                h[gray[i,j]] += 1
+        probabilityDensity = h / (gray.shape[0] * gray.shape[1])
+        return tuple(probabilityDensity)
+    else:
+        h = np.zeros(256)
+        iter = 0
+        for i in range(gray.shape[0]):
+            for j in range(gray.shape[1]):
+                if masks[i,j] == 1 or masks[i,j] == 256:
+                    h[gray[i,j]] += 1
+                    iter += 1
+        probabilityDensity = h / iter
+        return tuple(probabilityDensity)
+
 def energy_of_image(image, masks=np.array([])):
     pass
 
@@ -215,3 +236,4 @@ if __name__=='__main__':
     print(f'standard deviation:{standardDeviation_of_image(Ivy)}')
     print(f'skewness:{skewness_of_image(Ivy)}')
     print(f'kurtosis:{kurtosis_of_image(Ivy)}')
+    print(f'Probaility Density:{probabilitydensity_of_image(Ivy)}')
