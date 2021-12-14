@@ -153,7 +153,19 @@ def probabilitydensity_of_image(image, masks=np.array([])):
         return tuple(probabilityDensity)
 
 def energy_of_image(image, masks=np.array([])):
-    pass
+    if masks.all():
+        probabilityDensity = probabilitydensity_of_image(image)
+        sum = 0
+        for i in range(256):
+            sum += probabilityDensity[i] * probabilityDensity[i]
+        return sum
+    else:
+        probabilityDensity = probabilitydensity_of_image(image, masks)
+        sum = 0
+        for i in range(256):
+            sum += probabilityDensity[i] * probabilityDensity[i]
+        return sum
+        
 
 
 
@@ -237,3 +249,4 @@ if __name__=='__main__':
     print(f'skewness:{skewness_of_image(Ivy)}')
     print(f'kurtosis:{kurtosis_of_image(Ivy)}')
     print(f'Probaility Density:{probabilitydensity_of_image(Ivy)}')
+    print(f'Energy:{energy_of_image(Ivy)}')
