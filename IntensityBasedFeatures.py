@@ -280,7 +280,7 @@ def kurtosis_of_image(image, masks=np.array([]), mode='RGB'):
                 for j in range(h):
                     if masks[i, j] == 1 or masks[i, j] ==255:
                         sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
-            kurt = standardDeviation ** -4 * (sum / iter) - [3, 3, 3]
+            kurt = standardDeviation ** -4 * (sum / iter)
             return tuple(kurt)
     elif mode == 'GRAY':
         im = np.array(image)
@@ -302,7 +302,7 @@ def kurtosis_of_image(image, masks=np.array([]), mode='RGB'):
             for i in range(w):
                 for j in range(h):
                     sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
-            kurt = standardDeviation ** -4 * (sum / iter) - 3
+            kurt = standardDeviation ** -4 * (sum / iter)
             return tuple(kurt)
         else:
             sum = [0]
@@ -324,7 +324,7 @@ def kurtosis_of_image(image, masks=np.array([]), mode='RGB'):
                 for j in range(h):
                     if masks[i, j] == 1 or masks[i, j] ==255:
                         sum += (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean) * (im[i,j] - mean)
-            kurt = standardDeviation ** -4 * (sum / iter) - [3, 3, 3]
+            kurt = standardDeviation ** -4 * (sum / iter)
             return tuple(kurt)
 
 def probabilitydensity_of_image(image, masks=np.array([]), mode='GRAY'):
