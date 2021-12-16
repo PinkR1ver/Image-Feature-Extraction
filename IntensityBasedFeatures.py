@@ -351,6 +351,7 @@ def probabilitydensity_of_image(image, masks=np.array([]), mode='GRAY'):
         probabilityDensity = h / iter
         return tuple(probabilityDensity)
 
+
 def energy_of_image(image, masks=np.array([]), mode='GRAY'):
     if masks.all():
         probabilityDensity = probabilitydensity_of_image(image, mode=mode)
@@ -380,6 +381,7 @@ def entropy_of_image(image, masks=np.array([]), mode='GRAY'):
             if probabilityDensity[i] !=0:
                 sum -= probabilityDensity[i] * math.log(probabilityDensity[i], 2)
         return sum
+
         
 
 
@@ -464,7 +466,7 @@ if __name__=='__main__':
     print(f'standard deviation:{standardDeviation_of_image(Ivy)}')
     print(f'skewness:{skewness_of_image(Ivy)}')
     print(f'kurtosis:{kurtosis_of_image(Ivy)}')
-    print(f'Probaility Density:{probabilitydensity_of_image(Ivy)}')
+    #print(f'Probaility Density:{probabilitydensity_of_image(Ivy)}')
     print(f'Energy:{energy_of_image(Ivy)}')
     print(f'Entropy:{entropy_of_image(Ivy)}')
     #----------------------------------------------
@@ -478,6 +480,11 @@ if __name__=='__main__':
     print(f'standard deviation:{gray_SD}')
     print(f'skewness:{gray_skewness}')
     print(f'kurtosis:{gray_kurtosis}')
-    print(f'Probaility Density:{probabilitydensity_of_image(gray_Ivy2)}')
+    #print(f'Probaility Density:{probabilitydensity_of_image(gray_Ivy2)}')
     print(f'Energy:{energy_of_image(gray_Ivy2)}')
     print(f'Entropy:{entropy_of_image(gray_Ivy2)}')
+    sum = 0
+    probabilitydensity = probabilitydensity_of_image(gray_Ivy2, mode='GRAY')
+    for i in range(256):
+        sum += i * probabilitydensity[i]
+    print(f'mean:{sum}')
