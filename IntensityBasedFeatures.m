@@ -3,16 +3,16 @@ whos Brain
 %image(Brain)
 Brain = rgb2gray(Brain);
 whos Brain
-figure
-imshow(Brain)
+%figure
+%imshow(Brain)
 mean2(Brain)
 std2(Brain)
 skewness(double(Brain), 1, 'all')
 kurtosis(double(Brain), 1, 'all')
 
-[glcms,SI] = graycomatrix(Brain);
+test = [0,0,1,1;0,0,1,1;0,2,2,2;2,2,3,3;]
+glcm = graycomatrix(test, 'Numlevels', 4, 'Graylimits', [0,4])
 
-stats = graycoprops(glcms)
+glcms = graycomatrix(Brain, 'Numlevels', 256)
 
-figure
-imshow(rescale(SI))
+glcmss = graycomatrix(Brain, 'GrayLimits', [0, 8]) 
