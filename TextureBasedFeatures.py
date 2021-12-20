@@ -13,26 +13,49 @@ def ImageCompress(image, image_depth=256, levels=8):
     return image_compress
 
 
-def gray_level_co_occurence_matrix(image, image_depth=256, levels=8, offset=[0, 1], symmetric=False):
-    image = ImageCompress(image, image_depth, levels)
-    GLCM = np.zeros((levels, levels))  # gray levels co-occurence matrix
-    if symmetric == False:
-        for i in range(image.shape[0]):
-            for j in range(image.shape[1]):
-                if i + offset[0] < image.shape[0] and i + offset[0] >= 0 and j + offset[1] < image.shape[1] and j + offset[1] >= 0:
-                    x = image[i, j]
-                    y = image[i + offset[0], j + offset[1]]
-                    GLCM[x, y] += 1
-        return np.uint(GLCM)
+def gray_level_co_occurence_matrix(image, image_depth=256, levels=8, offset=[0, 1], symmetric=False, masks=np.array([])):
+    if masks.all():
+        image = ImageCompress(image, image_depth, levels)
+        GLCM = np.zeros((levels, levels))  # gray levels co-occurence matrix
+        if symmetric == False:
+            for i in range(image.shape[0]):
+                for j in range(image.shape[1]):
+                    if i + offset[0] < image.shape[0] and i + offset[0] >= 0 and j + offset[1] < image.shape[1] and j + offset[1] >= 0:
+                        x = image[i, j]
+                        y = image[i + offset[0], j + offset[1]]
+                        GLCM[x, y] += 1
+            return np.uint(GLCM)
+        else:
+            for i in range(image.shape[0]):
+                for j in range(image.shape[1]):
+                    if i + offset[0] < image.shape[0] and i + offset[0] >= 0 and j + offset[1] < image.shape[1] and j + offset[1] >= 0:
+                        x = image[i, j]
+                        y = image[i + offset[0], j + offset[1]]
+                        GLCM[x, y] += 1
+                        GLCM[y, x] +=1
+            return np.uint(GLCM)
     else:
-        for i in range(image.shape[0]):
-            for j in range(image.shape[1]):
-                if i + offset[0] < image.shape[0] and i + offset[0] >= 0 and j + offset[1] < image.shape[1] and j + offset[1] >= 0:
-                    x = image[i, j]
-                    y = image[i + offset[0], j + offset[1]]
-                    GLCM[x, y] += 1
-                    GLCM[y, x] +=1
-        return np.uint(GLCM)
+        image = ImageCompress(image, image_depth, levels)
+        GLCM = np.zeros((levels, levels))  # gray levels co-occurence matrix
+        if symmetric == False:
+            for i in range(image.shape[0]):
+                for j in range(image.shape[1]):
+                    if i + offset[0] < image.shape[0] and i + offset[0] >= 0 and j + offset[1] < image.shape[1] and j + offset[1] >= 0:
+                        x = image[i, j]
+                        y = image[i + offset[0], j + offset[1]]
+                        if (masks[i, j] == 1 or masks[i, j] == 255) and (masks[i + offset[0], j + offset[1]] == 1 or masks[i + offset[0], j + offset[1]] == 255):
+                            GLCM[x, y] += 1
+            return np.uint(GLCM)
+        else:
+            for i in range(image.shape[0]):
+                for j in range(image.shape[1]):
+                    if i + offset[0] < image.shape[0] and i + offset[0] >= 0 and j + offset[1] < image.shape[1] and j + offset[1] >= 0:
+                        x = image[i, j]
+                        y = image[i + offset[0], j + offset[1]]
+                        if (masks[i, j] == 1 or masks[i, j] == 255) and (masks[i + offset[0], j + offset[1]] == 1 or masks[i + offset[0], j + offset[1]] == 255):
+                            GLCM[x, y] += 1
+                            GLCM[y, x] += 1
+            return np.uint(GLCM)
 
 def contrast_of_image(glcm):
     norm_glcm = glcm / glcm.sum()
