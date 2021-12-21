@@ -7,3 +7,7 @@ if __name__ == '__main__':
     
     offset = np.array([[0, 1], [1, 1], [1, 0], [-1, 1], [-1, 0], [-1, -1], [0, -1], [-1, 1]])
     print(offset.shape)
+
+    direction = [1, 2, 4]
+    for k in direction:
+        print(k)
