@@ -11,3 +11,7 @@ if __name__ == '__main__':
     direction = [1, 2, 4]
     for k in direction:
         print(k)
+
+    a = [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
+    a = np.pad(a, 2)
+    print(a)
