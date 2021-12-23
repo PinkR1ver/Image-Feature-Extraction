@@ -4,6 +4,7 @@ import cv2
 from skimage import io
 from matplotlib import pyplot as plt
 import math
+from node import *
 
 def if_point_in_corner(masks, i, j):
     if i ==0 or i == masks.shape[0] - 1 or j == 0 or j == masks.shape[1] - 1:
@@ -32,7 +33,7 @@ def point_in_which_side(masks, i, j):
 '''
 
 def extract_boundary(masks):
-    offset = np.array([[0, 1], [1, 1], [1, 0], [-1, 1], [-1, 0], [-1, -1], [0, -1], [-1, 1]])
+    offset = np.array([[0, 1], [1, 0], [-1, 0], [0, -1]])
     boundary = np.zeros(masks.shape, dtype=np.uint8)
     for i in range(masks.shape[0]):
         for j in range(masks.shape[1]):
@@ -177,6 +178,55 @@ def perimeter_of_image_by_bit_quads_pratt(masks):
     # perimeter = bit_quads[0] + bit_quads[1] + bit_quads[2] + 2 * bit_quads[4] # Gray's method 
     return perimeter
 
+def chain_code_Freeman(masks):
+    # Freeman Chain code
+    chain_code = SingleLinkList()
+    #chain_code = []
+    offset_xy = np.array([[1, 0], [0, 1], [-1, 0], [0, -1]])
+    offset_diagonal = np.array([[1, 1], [-1, 1], [-1, -1], [1, -1]]) 
+    boundary = extract_boundary(masks)
+    flag = np.zeros(boundary.shape)
+    for i in range(boundary.shape[0]):
+        for j in range(boundary.shape[1]):
+            if boundary[i, j] == 255 and flag[i, j] == 0:
+                temp_chain_code = np.array([], dtype=np.uint8)
+                end_point = np.array([i, j])
+                flag[i, j] = 1
+                while True:
+                    mark = 0
+                    for k in range(4):
+                        if i + offset_xy[k, 0] >= 0  and i + offset_xy[k, 0] < boundary.shape[0] and j + offset_xy[k, 1] >=0 and j + offset_xy[k, 1] < boundary.shape[1]:
+                            if boundary[i + offset_xy[k, 0], j + offset_xy[k, 1]] == 255 and flag[i + offset_xy[k, 0], j + offset_xy[k, 1]] == 0:
+                                temp_chain_code = np.append(temp_chain_code, k * 2)
+                                flag[i + offset_xy[k, 0], j + offset_xy[k, 1]] = 1
+                                i = i + offset_xy[k, 0]
+                                j = j + offset_xy[k, 1]
+                                mark = 1
+                                break
+                    if not mark:
+                        for k in range(4):
+                            if i + offset_diagonal[k, 0] >= 0  and i + offset_diagonal[k, 0] < boundary.shape[0] and j + offset_diagonal[k, 1] >=0 and j + offset_diagonal[k, 1] < boundary.shape[1]:
+                                if boundary[i + offset_diagonal[k, 0], j + offset_diagonal[k, 1]] == 255 and flag[i + offset_diagonal[k, 0], j + offset_diagonal[k, 1]] == 0:
+                                    temp_chain_code = np.append(temp_chain_code, k * 2 + 1)
+                                    i = i + offset_diagonal[k, 0]
+                                    j = j + offset_diagonal[k, 1]
+                                    mark = 1
+                                    break
+                    if not mark:
+                        offset = end_point - np.array([i, j])
+                        for k in range(4):
+                            if offset_xy[k, 0] == offset[0] and offset_xy[k, 1] == offset[1]:
+                                temp_chain_code = np.append(temp_chain_code, k * 2)
+                        for k in range(4):
+                            if offset_diagonal[k, 0] == offset[0] and offset_diagonal[k, 1] == offset[1]:
+                                temp_chain_code = np.append(temp_chain_code, k * 2 + 1)
+                        chain_code.append(temp_chain_code)
+                        break
+    return chain_code
+
+
+                
+
 
 
             
@@ -205,10 +255,10 @@ if __name__ == '__main__':
     io.imshow(white_boundary)
     plt.show()
 
-    area = area_of_image_by_bit_quads_gray(image)
-    perimeter = perimeter_of_image_by_bit_quads_gray(image)
-    print(area)
-    print(perimeter)
+    print(area_of_image_by_bit_quads_gray(image))
+    print(perimeter_of_image_by_bit_quads_gray(image))
+    print(area_of_image_by_bit_quads_pratt(image))
+    print(perimeter_of_image_by_bit_quads_pratt(image))
 
     experiment = np.array([[0, 255], [255, 255]], dtype=np.uint8)
     io.imshow(experiment)
@@ -220,3 +270,11 @@ if __name__ == '__main__':
 
     print(area_of_image_by_bit_quads_pratt(experiment))
     print(perimeter_of_image_by_bit_quads_pratt(experiment))
+
+    chain_code = chain_code_Freeman(experiment)
+    for i in chain_code.items():
+        print(i)
+    exp = np.array([[255]])
+    chain_code_exp = chain_code_Freeman(exp)
+    for i in chain_code_exp.items():
+        print(i)

@@ -1,3 +1,4 @@
+from matplotlib.pyplot import xcorr
 import numpy as np
 
 if __name__ == '__main__':
@@ -15,3 +16,16 @@ if __name__ == '__main__':
     a = [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
     a = np.pad(a, 2)
     print(a)
+
+    x = np.array([], dtype=np.uint8)
+    x = np.append(x, 2 * 2)
+    print(x)
+
+    x = np.array([1, 2, 3, 4, 4, 4, 5, 6, 7, 3, 3], dtype=np.uint8)
+    y = np.array([1, 2, 3, 3], dtype=np.uint8)
+    z = np.array([3, 3, 4, 5])
+    exp_list = []
+    exp_list.append(x)
+    exp_list.append(y)
+    exp_list.append(z)
+    print(exp_list[0])
