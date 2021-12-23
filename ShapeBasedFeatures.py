@@ -12,6 +12,12 @@ def if_point_in_corner(masks, i, j):
     else:
         return False
 
+def odd_or_even(num):
+    if (num % 2 == 0):
+        return 0
+    else:
+        return 1
+
 '''
 def point_in_which_side(masks, i, j):
     if i == 0 and j == 0:
@@ -124,9 +130,6 @@ def extract_boundary(masks):
                     '''        
     return boundary
 
-def perimeter_of_boundary(masks):
-    boundary = extract_boundary(masks)
-
 
 def extract_bit_quads(masks):
     bit_quads = np.array([0, 0, 0, 0, 0]) #Q1,Q2,Q3,Q4,QD
@@ -178,27 +181,28 @@ def perimeter_of_image_by_bit_quads_pratt(masks):
     # perimeter = bit_quads[0] + bit_quads[1] + bit_quads[2] + 2 * bit_quads[4] # Gray's method 
     return perimeter
 
-def chain_code_Freeman(masks):
+def extract_chain_code_Freeman(masks):
     # Freeman Chain code
+    # Considering the numpy i is column direction and j is row direction, the chain_code direction is different from essay, you need to find it.
     chain_code = SingleLinkList()
     #chain_code = []
     offset_xy = np.array([[1, 0], [0, 1], [-1, 0], [0, -1]])
     offset_diagonal = np.array([[1, 1], [-1, 1], [-1, -1], [1, -1]]) 
     boundary = extract_boundary(masks)
-    flag = np.zeros(boundary.shape)
+    #flag = np.zeros([boundary.shape[0], boundary.shape[1]])
     for i in range(boundary.shape[0]):
         for j in range(boundary.shape[1]):
-            if boundary[i, j] == 255 and flag[i, j] == 0:
+            if boundary[i, j] == 255:
                 temp_chain_code = np.array([], dtype=np.uint8)
                 end_point = np.array([i, j])
-                flag[i, j] = 1
+                boundary[i, j] = 0 #flag[i, j] = 1
                 while True:
                     mark = 0
                     for k in range(4):
                         if i + offset_xy[k, 0] >= 0  and i + offset_xy[k, 0] < boundary.shape[0] and j + offset_xy[k, 1] >=0 and j + offset_xy[k, 1] < boundary.shape[1]:
-                            if boundary[i + offset_xy[k, 0], j + offset_xy[k, 1]] == 255 and flag[i + offset_xy[k, 0], j + offset_xy[k, 1]] == 0:
+                            if boundary[i + offset_xy[k, 0], j + offset_xy[k, 1]] == 255:
                                 temp_chain_code = np.append(temp_chain_code, k * 2)
-                                flag[i + offset_xy[k, 0], j + offset_xy[k, 1]] = 1
+                                boundary[i + offset_xy[k, 0], j + offset_xy[k, 1]] = 0 #flag[i + offset_xy[k, 0], j + offset_xy[k, 1]] = 1
                                 i = i + offset_xy[k, 0]
                                 j = j + offset_xy[k, 1]
                                 mark = 1
@@ -206,7 +210,8 @@ def chain_code_Freeman(masks):
                     if not mark:
                         for k in range(4):
                             if i + offset_diagonal[k, 0] >= 0  and i + offset_diagonal[k, 0] < boundary.shape[0] and j + offset_diagonal[k, 1] >=0 and j + offset_diagonal[k, 1] < boundary.shape[1]:
-                                if boundary[i + offset_diagonal[k, 0], j + offset_diagonal[k, 1]] == 255 and flag[i + offset_diagonal[k, 0], j + offset_diagonal[k, 1]] == 0:
+                                if boundary[i + offset_diagonal[k, 0], j + offset_diagonal[k, 1]] == 255:
+                                    boundary[i + offset_diagonal[k, 0], j + offset_diagonal[k, 1]] = 0
                                     temp_chain_code = np.append(temp_chain_code, k * 2 + 1)
                                     i = i + offset_diagonal[k, 0]
                                     j = j + offset_diagonal[k, 1]
@@ -224,7 +229,22 @@ def chain_code_Freeman(masks):
                         break
     return chain_code
 
-
+def perimeter_of_boundary_by_chain_code(masks):
+    chain_code = extract_chain_code_Freeman(masks)
+    sum_even = 0
+    sum_odd = 0 
+    perimeter = 0
+    for i in chain_code.items():
+        for j in i:
+            if(odd_or_even(j)):
+                sum_odd += 1
+            else:
+                sum_even +=1
+        perimeter += sum_even
+        perimeter += math.sqrt(2) * sum_odd
+        sum_odd = 0
+        sum_even = 0
+    return perimeter
                 
 
 
@@ -233,7 +253,7 @@ def chain_code_Freeman(masks):
            
 
 if __name__ == '__main__':
-    image = cv2.imread(r'sample/TCGA_CS_4941_19960909_18_mask.tif', cv2.IMREAD_GRAYSCALE)
+    image = cv2.imread(r'sample/TCGA_CS_6666_20011109_16_mask.tif', cv2.IMREAD_GRAYSCALE)
     image = np.array(image)
     io.imshow(image)
     plt.show()
@@ -260,7 +280,7 @@ if __name__ == '__main__':
     print(area_of_image_by_bit_quads_pratt(image))
     print(perimeter_of_image_by_bit_quads_pratt(image))
 
-    experiment = np.array([[0, 255], [255, 255]], dtype=np.uint8)
+    experiment = np.array([[255, 255], [255, 255]], dtype=np.uint8)
     io.imshow(experiment)
     plt.show()
     bit = extract_bit_quads(experiment)
@@ -271,10 +291,35 @@ if __name__ == '__main__':
     print(area_of_image_by_bit_quads_pratt(experiment))
     print(perimeter_of_image_by_bit_quads_pratt(experiment))
 
-    chain_code = chain_code_Freeman(experiment)
+    chain_code = extract_chain_code_Freeman(experiment)
     for i in chain_code.items():
         print(i)
     exp = np.array([[255]])
-    chain_code_exp = chain_code_Freeman(exp)
+    chain_code_exp = extract_chain_code_Freeman(exp)
     for i in chain_code_exp.items():
         print(i)
+
+    chain_code_exp2 = extract_chain_code_Freeman(image)
+    for i in chain_code_exp2.items():
+        print(i)
+
+    exp2 = np.array([[0, 255, 255, 0, 0, 0, 0], [255, 0, 0, 255, 0, 0, 0], [255, 0, 0, 0, 255, 255, 255], [255, 0, 0, 0, 0, 0, 255], [0, 255, 0, 255, 255, 255, 0], [0, 255, 255, 0, 0, 0, 0]])
+    io.imshow(exp2)
+    plt.show()
+    chain_code_exp3 = extract_chain_code_Freeman(exp2)
+    for i in chain_code_exp3.items():
+        print(i)
+    
+    io.imshow(exp2)
+    plt.show()
+
+    print(perimeter_of_boundary_by_chain_code(experiment))
+    print(perimeter_of_boundary_by_chain_code(image))
+    
+    print(perimeter_of_boundary_by_chain_code(exp2))
+    print(perimeter_of_image_by_bit_quads_gray(exp2))
+    print(perimeter_of_image_by_bit_quads_pratt(exp2))
+
+    print(perimeter_of_boundary_by_chain_code(image))
+    print(perimeter_of_image_by_bit_quads_gray(image))
+    print(perimeter_of_image_by_bit_quads_pratt(image))
