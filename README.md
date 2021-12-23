@@ -20,14 +20,18 @@ $\text{p}(i)$  be the probability density.
 
 where:
 
-$$f(x,y)=\begin{bmatrix}
+$$f(x,y)=
+\begin{bmatrix}
     f(0,0) & f(0,1) & f(0,2) & \dots &  f(0, \text{N}_y-1) \\
     f(1,0) & f(1,1) & f(1,2) & \dots &  f(1, \text{N}_y-1) \\
     \vdots & \vdots & \vdots & \ddots & \vdots \\
     f(\text{N}_x-1,0) & f(\text{N}_x-1,1) & f(\text{N}_x-1,2) & \dots &  f(\text{N}_x-1, \text{N}_y-1)
-\end{bmatrix}$$
+\end{bmatrix}
+$$
 
-$$h(i) = \sum_{x=0}^{\text{N}_\text{g}-1}\sum_{y=0}^{\text{N}_\text{g}-1}\delta(f(x,y),i), i=0,1,2,\dots, N-1$$
+$$
+h(i) = \sum_{x=0}^{\text{N}_\text{g}-1}\sum_{y=0}^{\text{N}_\text{g}-1}\delta(f(x,y),i), i=0,1,2,\dots, N-1
+$$
 
 $$\delta(i,j)=\begin{cases}
 1, & i=j \\
