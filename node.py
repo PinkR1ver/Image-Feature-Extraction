@@ -60,12 +60,12 @@ class SingleLinkList:
             cur.next = node
     
     def remove(self, item):
-        cur = self._head
+        cur = self.head
         pre = None
         while cur is not None:
             if cur.item == item:
                 if not pre:
-                    self._head = cur.next
+                    self.head = cur.next
                 else:
                     pre.next = cur.next
                 return True
