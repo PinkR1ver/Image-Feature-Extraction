@@ -6,7 +6,7 @@ You can see, it is divided into three main types, including itensity based featu
 
 
 ## Considering the README using formula and github don't support katex here. You can download the README to read.
-## Also, you can download the chrome extensions: https://chrome.google.com/webstore/detail/mathjax-plugin-for-github/ioemnmodlmafdkllaclgeombjnmnbima?hl=en
+## Also, you can download the chrome extensions: https://chrome.google.com/webstore/detail/mathjax-plugin-for-github/ioemnmodlmafdkllaclgeombjnmnbima?hl=en, it can help you to show the math formula. But it seems LaTex, not Katex, so it may be some wrong preview here.
 
 ## Intensity features
 
