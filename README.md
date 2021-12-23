@@ -4,9 +4,9 @@
 ![Feature types](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F0329981e-d358-4778-a8c2-a3272260699c%2FScreenshot_from_2021-11-30_14-13-59.png?table=block&id=570c4c2a-00ec-42c2-babc-86351a3291cd&spaceId=e0cb3551-7dbe-4f03-a44f-f7d9328ecd4f&width=1900&userId=80c81d2c-5396-4c72-be40-5220dd79ce33&cache=v2)
 You can see, it is divided into three main types, including itensity based features, texture based features and shape based features. Actually, there are hundreds of features can be extracted and used in classical CV, but we just extract this featured at first.
 
-<font style= "color:#FF5733">
-Considering the README using formula and github don't support katex here. You can download the README to read.
-</font>
+
+## Considering the README using formula and github don't support katex here. You can download the README to read.
+## Also, you can download the chrome extensions: https://chrome.google.com/webstore/detail/mathjax-plugin-for-github/ioemnmodlmafdkllaclgeombjnmnbima?hl=en
 
 ## Intensity features
 
