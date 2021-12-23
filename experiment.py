@@ -31,3 +31,7 @@ if __name__ == '__main__':
     print(exp_list[0])
 
     print(max(1, 2))
+
+    k1 = np.array([3, 4])
+    k2 = np.array([5, 3])
+    print(sum((k1 - k2) ** 2))

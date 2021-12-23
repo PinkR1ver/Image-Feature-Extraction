@@ -274,15 +274,44 @@ def area_of_image_by_chain_code(masks):
             
 def diameter_of_boundary(masks):
     diameter = 0
+    location = SingleLinkList()
+    offset_xy = np.array([[1, 0], [0, 1], [-1, 0], [0, -1]])
+    offset_diagonal = np.array([[1, 1], [-1, 1], [-1, -1], [1, -1]]) 
     boundary = extract_boundary(masks)
     for i in range(boundary.shape[0]):
         for j in range(boundary.shape[1]):
             if boundary[i, j] == 255:
-                    for x in range(boundary.shape[0]):
-                        for y in range(boundary.shape[1]):
-                            if boundary[x, y] == 255:
-                                distance = math.sqrt(((x - i) ** 2) + ((y - j) ** 2))
-                                diameter = max(diameter, distance)
+                temp_location = np.array([[i, j]], dtype=np.uint8)
+                boundary[i, j] = 0
+                while True:
+                    mark = 0
+                    for k in range(4):
+                        if i + offset_xy[k, 0] >= 0  and i + offset_xy[k, 0] < boundary.shape[0] and j + offset_xy[k, 1] >=0 and j + offset_xy[k, 1] < boundary.shape[1]:
+                            if boundary[i + offset_xy[k, 0], j + offset_xy[k, 1]] == 255:
+                                boundary[i + offset_xy[k, 0], j + offset_xy[k, 1]] = 0
+                                i = i + offset_xy[k, 0]
+                                j = j + offset_xy[k, 1]
+                                temp_location = np.append(temp_location, [[i, j]], axis=0)
+                                mark = 1
+                                break
+                    if not mark:
+                        for k in range(4):
+                            if i + offset_diagonal[k, 0] >= 0  and i + offset_diagonal[k, 0] < boundary.shape[0] and j + offset_diagonal[k, 1] >=0 and j + offset_diagonal[k, 1] < boundary.shape[1]:
+                                if boundary[i + offset_diagonal[k, 0], j + offset_diagonal[k, 1]] == 255:
+                                    boundary[i + offset_diagonal[k, 0], j + offset_diagonal[k, 1]] = 0
+                                    i = i + offset_diagonal[k, 0]
+                                    j = j + offset_diagonal[k, 1]
+                                    temp_location = np.append(temp_location, [[i, j]], axis=0)
+                                    mark = 1
+                                    break
+                    if not mark:
+                        location.append(temp_location)
+                        break
+    for i in location.items():
+        for j in i:
+            for k in i:
+                distance = math.sqrt(sum((j - k) ** 2))
+                diameter = max(diameter, distance)
     return diameter
 
 
@@ -367,5 +396,5 @@ if __name__ == '__main__':
     print(area_of_image_by_chain_code(image))
 
     print(diameter_of_boundary(image))
-    print(diameter_of_boundary(experiment))
     print(diameter_of_boundary(exp2))
+    print(diameter_of_boundary(experiment))
