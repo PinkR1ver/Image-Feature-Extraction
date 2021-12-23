@@ -245,7 +245,32 @@ def perimeter_of_boundary_by_chain_code(masks):
         sum_odd = 0
         sum_even = 0
     return perimeter
-                
+
+def area_of_image_by_chain_code(masks):
+    chain_code = extract_chain_code_Freeman(masks)
+    area = 0
+    for i in chain_code.items():
+        y_i = 0
+        for j in i:
+            if j == 1 or j == 2 or j == 3:
+                c_i_x = 1
+            elif j == 0 or j== 4:
+                c_i_x = 0
+            else:
+                c_i_x = -1
+            
+            if j == 1 or j == 0 or j == 7:
+                c_i_y = 1
+            elif j == 2 or j == 6:
+                c_i_y = 0
+            else:
+                c_i_y = -1
+            
+            area += c_i_x * (y_i + c_i_y / 2)
+            y_i += c_i_y
+    
+    return area
+             
 
 
 
@@ -323,3 +348,7 @@ if __name__ == '__main__':
     print(perimeter_of_boundary_by_chain_code(image))
     print(perimeter_of_image_by_bit_quads_gray(image))
     print(perimeter_of_image_by_bit_quads_pratt(image))
+
+    print(area_of_image_by_bit_quads_gray(image))
+    print(area_of_image_by_bit_quads_pratt(image))
+    print(area_of_image_by_chain_code(image))
