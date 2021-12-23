@@ -20,7 +20,8 @@ $\text{p}(i)$  be the probability density.
 
 where:
 
-$$f(x,y)=
+$$
+f(x,y)=
 \begin{bmatrix}
     f(0,0) & f(0,1) & f(0,2) & \dots &  f(0, \text{N}_y-1) \\
     f(1,0) & f(1,1) & f(1,2) & \dots &  f(1, \text{N}_y-1) \\
