@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import cv2
+from numpy.core.fromnumeric import shape
 from skimage import io
 from matplotlib import pyplot as plt
 import math
@@ -270,7 +271,19 @@ def area_of_image_by_chain_code(masks):
             y_i += c_i_y
     
     return area
-             
+            
+def diameter_of_boundary(masks):
+    diameter = 0
+    boundary = extract_boundary(masks)
+    for i in range(boundary.shape[0]):
+        for j in range(boundary.shape[1]):
+            if boundary[i, j] == 255:
+                    for x in range(boundary.shape[0]):
+                        for y in range(boundary.shape[1]):
+                            if boundary[x, y] == 255:
+                                distance = math.sqrt(((x - i) ** 2) + ((y - j) ** 2))
+                                diameter = max(diameter, distance)
+    return diameter
 
 
 
@@ -305,7 +318,7 @@ if __name__ == '__main__':
     print(area_of_image_by_bit_quads_pratt(image))
     print(perimeter_of_image_by_bit_quads_pratt(image))
 
-    experiment = np.array([[255, 255], [255, 255]], dtype=np.uint8)
+    experiment = np.array([[0, 255], [255, 255]], dtype=np.uint8)
     io.imshow(experiment)
     plt.show()
     bit = extract_bit_quads(experiment)
@@ -352,3 +365,7 @@ if __name__ == '__main__':
     print(area_of_image_by_bit_quads_gray(image))
     print(area_of_image_by_bit_quads_pratt(image))
     print(area_of_image_by_chain_code(image))
+
+    print(diameter_of_boundary(image))
+    print(diameter_of_boundary(experiment))
+    print(diameter_of_boundary(exp2))

@@ -29,3 +29,5 @@ if __name__ == '__main__':
     exp_list.append(y)
     exp_list.append(z)
     print(exp_list[0])
+
+    print(max(1, 2))
