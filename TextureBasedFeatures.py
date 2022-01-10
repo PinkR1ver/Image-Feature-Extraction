@@ -60,7 +60,10 @@ def gray_level_co_occurence_matrix(image, image_depth=256, levels=8, offset=[0, 
 
 
 def contrast_of_image(glcm):
-    norm_glcm = glcm / glcm.sum()
+    if glcm.sum() != 0:
+        norm_glcm = glcm / glcm.sum()
+    else:
+        norm_glcm = glcm
     contrast = 0
     for i in range(glcm.shape[0]):
         for j in range(glcm.shape[1]):
@@ -69,7 +72,10 @@ def contrast_of_image(glcm):
 
 
 def homogeneity_of_image(glcm):
-    norm_glcm = glcm / glcm.sum()
+    if glcm.sum() != 0:
+        norm_glcm = glcm / glcm.sum()
+    else:
+        norm_glcm = glcm
     homogeneity = 0
     for i in range(glcm.shape[0]):
         for j in range(glcm.shape[1]):
@@ -78,7 +84,10 @@ def homogeneity_of_image(glcm):
 
 
 def glcm_i_mean_of_image(glcm):
-    norm_glcm = glcm / glcm.sum()
+    if glcm.sum() != 0:
+            norm_glcm = glcm / glcm.sum()
+    else:
+        norm_glcm = glcm
     mean = 0
     for i in range(glcm.shape[0]):
         for j in range(glcm.shape[1]):
@@ -87,7 +96,10 @@ def glcm_i_mean_of_image(glcm):
 
 
 def glcm_i_variance_of_image(glcm):
-    norm_glcm = glcm / glcm.sum()
+    if glcm.sum() != 0:
+            norm_glcm = glcm / glcm.sum()
+    else:
+        norm_glcm = glcm
     mean = glcm_i_mean_of_image(glcm)
     variance = 0
     for i in range(glcm.shape[0]):
@@ -97,7 +109,10 @@ def glcm_i_variance_of_image(glcm):
 
 
 def glcm_j_mean_of_image(glcm):
-    norm_glcm = glcm / glcm.sum()
+    if glcm.sum() != 0:
+            norm_glcm = glcm / glcm.sum()
+    else:
+        norm_glcm = glcm
     mean = 0
     for i in range(glcm.shape[0]):
         for j in range(glcm.shape[1]):
@@ -106,7 +121,10 @@ def glcm_j_mean_of_image(glcm):
 
 
 def glcm_j_variance_of_image(glcm):
-    norm_glcm = glcm / glcm.sum()
+    if glcm.sum() != 0:
+            norm_glcm = glcm / glcm.sum()
+    else:
+        norm_glcm = glcm
     mean = glcm_j_mean_of_image(glcm)
     variance = 0
     for i in range(glcm.shape[0]):
@@ -116,7 +134,10 @@ def glcm_j_variance_of_image(glcm):
 
 
 def correlation_of_image(glcm):
-    norm_glcm = glcm / glcm.sum()
+    if glcm.sum() != 0:
+            norm_glcm = glcm / glcm.sum()
+    else:
+        norm_glcm = glcm
     correlation = 0
     mean_i = glcm_i_mean_of_image(glcm)
     mean_j = glcm_j_mean_of_image(glcm)
@@ -124,13 +145,19 @@ def correlation_of_image(glcm):
     standardDeviation_j = glcm_j_variance_of_image(glcm) ** (1/2)
     for i in range(glcm.shape[0]):
         for j in range(glcm.shape[1]):
-            correlation += norm_glcm[i, j] * ((i - mean_i) * (j - mean_j)) / (
-                standardDeviation_i * standardDeviation_j)
+            if standardDeviation_i * standardDeviation_j == 0:
+                return 0
+            else:
+                correlation += norm_glcm[i, j] * ((i - mean_i) * (j - mean_j)) / (
+                    standardDeviation_i * standardDeviation_j)
     return correlation
 
 
 def glcm_energy_of_image(glcm):
-    norm_glcm = glcm / glcm.sum()
+    if glcm.sum() != 0:
+            norm_glcm = glcm / glcm.sum()
+    else:
+        norm_glcm = glcm
     energy = 0
     for i in range(glcm.shape[0]):
         for j in range(glcm.shape[1]):
@@ -139,7 +166,10 @@ def glcm_energy_of_image(glcm):
 
 
 def glcm_entropy_of_image(glcm):
-    norm_glcm = glcm / glcm.sum()
+    if glcm.sum() != 0:
+            norm_glcm = glcm / glcm.sum()
+    else:
+        norm_glcm = glcm
     entropy = 0
     for i in range(glcm.shape[0]):
         for j in range(glcm.shape[1]):
@@ -149,7 +179,10 @@ def glcm_entropy_of_image(glcm):
 
 
 def dissimilarity_of_image(glcm):
-    norm_glcm = glcm / glcm.sum()
+    if glcm.sum() != 0:
+            norm_glcm = glcm / glcm.sum()
+    else:
+        norm_glcm = glcm
     dissimilarity = 0
     for i in range(glcm.shape[0]):
         for j in range(glcm.shape[1]):
