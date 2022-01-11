@@ -7,6 +7,7 @@ from PIL import Image, ImageOps
 import os
 import cv2
 import six
+import pandas as pd
 
 if __name__ == '__main__':
     '''
@@ -48,7 +49,7 @@ if __name__ == '__main__':
     cv2.imwrite(r'sample/TCGA_CS_4941_19960909_18_mask.tif', im_bw)
     '''
 
-    dataDir = r'/home/pinkr1ver/Documents/Github Projects/Feature Extraction/sample'
+    dataDir = r'sample'
 
     # imageName, maskName = getTestCase('brain1', dataDir)
     imageName = os.path.join(dataDir, 'TCGA_CS_4941_19960909_18.tif')
@@ -72,9 +73,16 @@ if __name__ == '__main__':
 
     result = extractor.execute(imageName, maskName)
     for key, val in result.items():
-      print("\t%s: %s" %(key, val))
-    
-    
+        if 'diagnostics' not in key:
+            print("\t%s: %s" %(key, val))
+
+    df = pd.DataFrame({})
+    for key, val in result.items():
+        if 'diagnostics' not in key:
+            df[key.replace('original_', '')] = pd.Series(val)
+    print(df)
+    df.to_csv(r'sample/test.csv', index=False)
+
     '''
     PATH=$(echo "$PATH" | sed -e 's/:\/home\/pinkr1ver\/fiji-linux64\/Fiji.app$//')
     
