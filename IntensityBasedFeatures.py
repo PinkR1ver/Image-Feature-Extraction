@@ -438,7 +438,6 @@ def entropy_of_image(image, masks=np.array([]), mode='GRAY'):
 
 
 if __name__=='__main__':
-    '''
     rocket = data.rocket()
     grayscale = color.rgb2gray(rocket)
     io.imshow(grayscale)
@@ -497,7 +496,6 @@ if __name__=='__main__':
     io.imshow(Brain)
     plt.show()
     print(Brain.shape)
-    '''
 
     Ivy = Image.open(r'sample/Ivy.jpeg')
     Ivy = np.array(Ivy)
