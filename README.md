@@ -1,3 +1,5 @@
+# NOTICE: THIS PROJECT IS MEANLESS, you can use pyradiomics to extract ROI features. THIS PROJECT WILL NEVER UPDATE
+
 # Feature extraction
 
 ## According to the essasy:*A Review on Tissue Segmentation and Feature Extraction of MRI Brain images*, there is the classic feature which can be extracted from MRI image
